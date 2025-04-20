@@ -14,17 +14,13 @@ final class ProductRepository implements ProductService
     public function getAllWithPaginate(int $page, int $rows_per_page, string $search=''): LengthAwarePaginator
     {
         $products = Product::query()->with(['category']);
-
         $products = $products->where('user_id', Auth::user()->id);
 
         $products = $products->when($search, function(Builder $query, $value) {
             return $query->where(DB::raw('lower(product_name)'), 'like', '%'.strtolower($value).'%');
         });
 
-        $products = $products->paginate(
-            perPage: $rows_per_page, 
-            page: $page
-        );
+        $products = $products->paginate(perPage: $rows_per_page, page: $page);
 
         return $products;
     }
